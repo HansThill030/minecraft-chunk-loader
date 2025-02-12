@@ -1,0 +1,34 @@
+import pyautogui
+import time
+import pytesseract
+from PIL import ImageGrab
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def capturar_tela():
+    return ImageGrab.grab()
+
+def detectar_desconexao():
+    imagem = capturar_tela()
+    texto = pytesseract.image_to_string(imagem)
+    palavras_chave = ["Connection Lost", "Servidor reiniciando", "Disconnected"]
+    return any(palavra in texto for palavra in palavras_chave)
+
+def reconectar():
+    time.sleep(5)
+    pyautogui.press("esc")
+    time.sleep(1)
+    pyautogui.click(960, 700)
+    time.sleep(15)
+    pyautogui.press("t")
+    time.sleep(1)
+    pyautogui.typewrite("/home base")
+    pyautogui.press("enter")
+
+def monitorar_servidor():
+    while True:
+        if detectar_desconexao():
+            reconectar()
+        time.sleep(10)
+
+monitorar_servidor()
